@@ -160,17 +160,11 @@ cat > /work/dist/KoboFrotz/KoboFrotz.sh << "RUNSCRIPT"
 
 # Get script directory
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+LOGFILE="$SCRIPT_DIR/kobofrotz.log"
 
 # Set up library paths
 export LD_LIBRARY_PATH="$SCRIPT_DIR/lib:$LD_LIBRARY_PATH"
 export QT_PLUGIN_PATH="$SCRIPT_DIR/plugins"
-
-# Qt platform settings for Kobo
-if [ -f "$SCRIPT_DIR/plugins/platforms/libkobo.so" ]; then
-    export QT_QPA_PLATFORM=kobo
-else
-    export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
-fi
 
 # E-Ink display optimizations
 export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS="rotate=0"
@@ -182,8 +176,22 @@ export QT_QPA_NO_HWSURFACE=1
 # Working directory
 cd "$SCRIPT_DIR"
 
-# Start KoboFrotz
-exec ./KoboFrotz "$@"
+# Decide platform once (no reload)
+if [ -f "$SCRIPT_DIR/plugins/platforms/libkobo.so" ]; then
+    export QT_QPA_PLATFORM=kobo
+    PLATFORM_MSG="Using kobo platform plugin"
+else
+    export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
+    PLATFORM_MSG="Using linuxfb platform (kobo plugin not found)"
+fi
+
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Launching KoboFrotz... ${PLATFORM_MSG}" > "$LOGFILE"
+
+# Start KoboFrotz (single attempt). Capture exit for NickelMenu chain.
+"$SCRIPT_DIR/KoboFrotz" "$@" >> "$LOGFILE" 2>&1
+STATUS=$?
+echo "$(date '+%Y-%m-%d %H:%M:%S') - KoboFrotz exited with status $STATUS" >> "$LOGFILE"
+exit $STATUS
 RUNSCRIPT
 chmod +x /work/dist/KoboFrotz/KoboFrotz.sh
 
@@ -192,7 +200,9 @@ echo "[Docker] Creating NickelMenu configuration..."
 mkdir -p /work/dist/nm
 cat > /work/dist/nm/kobofrotz << "NMCONFIG"
 menu_item :main :KoboFrotz :cmd_spawn :quiet:/mnt/onboard/.adds/KoboFrotz/KoboFrotz.sh
-  chain_success :nickel_misc :rescan_books_full
+  chain_success :dbg_msg :KoboFrotz exited OK (see log)
+  chain_failure :dbg_msg :KoboFrotz failed (see log)
+  chain_always  :nickel_misc :rescan_books_full
 NMCONFIG
 
 echo ""
