@@ -10,14 +10,57 @@ This guide describes how to cross-compile KoboFrotz for Kobo Libra Colour (Firmw
 - NickelMenu installed
 
 ### Development Environment
-- Linux-based operating system (Ubuntu 20.04+ recommended)
-- macOS (Intel or Apple Silicon) with Docker
+- Docker (recommended - works on Linux, macOS Intel/Apple Silicon, Windows WSL2)
+- OR: Linux with native toolchain
 - Git
-- Basic build tools
 
-## Quick Start
+## Quick Start (Docker - Recommended)
 
-### Option A: Automated Setup (Linux)
+The easiest way to build KoboFrotz is using Docker with the pre-built `rain92/kobo-qt-dev` image:
+
+### Interactive Docker Build (Simplest)
+
+```bash
+# Clone the repository
+git clone https://github.com/timboettiger/KoboFrotz.git
+cd KoboFrotz
+
+# Start Docker container (interactive)
+docker run --rm -it \
+  -v /tmp:/tmp \
+  -v "$PWD":/work \
+  -w /work \
+  rain92/kobo-qt-dev
+
+# Inside the container:
+mkdir -p build-kobo
+cd build-kobo
+/home/user/qt-bin/qt-linux-5.15-kde-kobo/bin/qmake ../KoboFrotz.pro CONFIG+=release
+make -j"$(nproc)"
+
+# Exit container (Ctrl+D or 'exit')
+# Binary is now at: build-kobo/KoboFrotz
+```
+
+### Automated Docker Build
+
+```bash
+# Clone the repository
+git clone https://github.com/timboettiger/KoboFrotz.git
+cd KoboFrotz
+
+# Create Docker helper script
+./setup-toolchain.sh --docker
+
+# Build using Docker (increments version automatically)
+./build-docker.sh
+
+# Deploy to Kobo
+./deploy-kobo.sh /media/$USER/KOBOeReader  # Linux
+./deploy-kobo.sh /Volumes/KOBOeReader      # macOS
+```
+
+### Native Linux Build (Alternative)
 
 ```bash
 # Clone the repository
@@ -32,23 +75,6 @@ cd KoboFrotz
 
 # Deploy to Kobo
 ./deploy-kobo.sh /media/$USER/KOBOeReader
-```
-
-### Option B: Docker Build (macOS / Linux)
-
-```bash
-# Clone the repository
-git clone https://github.com/timboettiger/KoboFrotz.git
-cd KoboFrotz
-
-# Create Docker helper script
-./setup-toolchain.sh --docker
-
-# Build using Docker
-./build-docker.sh
-
-# Deploy to Kobo
-./deploy-kobo.sh /Volumes/KOBOeReader
 ```
 
 ## Detailed Setup Instructions

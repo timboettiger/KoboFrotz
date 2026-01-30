@@ -9,16 +9,25 @@ by David Griffith and others. (See AUTHORS file for more details.)
 For detailed instructions on how to build KoboFrotz for Kobo devices 
 (including Kobo Libra Colour with Firmware 4.44+), see [BUILD.md](BUILD.md).
 
-Quick start:
+### Quick Build with Docker (Easiest)
+
 ```bash
-./build-kobo.sh     # Cross-compile for Kobo
-./deploy-kobo.sh /media/$USER/KOBOeReader  # Deploy to Kobo
+# Interactive Docker build
+docker run --rm -it -v "$PWD":/work -w /work rain92/kobo-qt-dev
+
+# Inside container:
+mkdir -p build-kobo && cd build-kobo
+/home/user/qt-bin/qt-linux-5.15-kde-kobo/bin/qmake ../KoboFrotz.pro CONFIG+=release
+make -j"$(nproc)"
 ```
 
-Requirements:
-- koxtoolchain (ARM cross-compiler)
-- Qt 5.15.x for Kobo
-- NickelMenu (for app launching)
+### Automated Build
+
+```bash
+./setup-toolchain.sh --docker   # Generate build script
+./build-docker.sh               # Build ARM binary
+./deploy-kobo.sh /media/$USER/KOBOeReader
+```
 
 ## License
 
