@@ -1,7 +1,41 @@
-QtFrotz - A Kobo interpreter for all Infocom games and other Z-machine games
-based on Frotz V2.43
+# KoboFrotz
 
-KDE port written by Peter Bienstman <Peter.Bienstman@UGent.be>, based on code
-by David Griffith and others. (See AUTHORS file for more details.)
+A Z-Machine interpreter for Kobo E-Readers, based on Frotz V2.43.
+Play classic Infocom games (Zork, etc.) on your Kobo!
 
+## Quick Start
 
+```bash
+# Requires Docker
+./build.sh                              # Build
+./build.sh --deploy /path/to/kobo       # Build & Deploy
+```
+
+See [BUILD.md](BUILD.md) for detailed instructions.
+
+## Features
+
+- Plays Z-Machine games (.z3, .z5, .z8)
+- Optimized for E-Ink displays
+- On-screen keyboard
+- Touch input support
+- NickelMenu integration
+
+## Supported Devices
+
+- Kobo Libra Colour (tested with Firmware 4.44)
+- Other Kobo devices with NickelMenu support
+
+## License
+
+See COPYING file for license details.
+
+## Credits
+
+- Frotz: David Griffith and others
+- KDE/Qt port: Peter Bienstman
+- Kobo adaptation: Tim Böttiger
+- kobo-qt-setup-scripts: Rain92
+- qt5-kobo-platform-plugin: Rain92
+
+See AUTHORS file for full credits.

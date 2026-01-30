@@ -1,3 +1,9 @@
+KoboFrotz:
+  Tim Böttiger <timboettiger@gmail.com>
+    - Kobo Libra Colour support
+    - Build system improvements
+    - Version management
+
 QtFrotz:
   Marco Kirchner <kirchnermarco@gmail.com>
 

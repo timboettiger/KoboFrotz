@@ -1,12 +1,12 @@
 /*
- * k_frotz.h
+ * kobofrotz.h
  *
- * KDE interface, declarations, definitions, and defaults
+ * KoboFrotz interface, declarations, definitions, and defaults
  *
  */
 
-#ifndef K_FROTZ_H
-#define K_FROTZ_H
+#ifndef KOBOFROTZ_H
+#define KOBOFROTZ_H
 
 #define MASTER_CONFIG		"frotz.conf"
 #define USER_CONFIG		".frotzrc"
@@ -69,7 +69,7 @@
 #endif
 
 #include <stdio.h>
-#include "qtfrotzview.h"
+#include "kobofrotzview.h"
 
 extern bool unix_init_pictures(); /* ux_pic */
 extern char stripped_story_name[FILENAME_MAX+1];
@@ -90,7 +90,7 @@ struct frotz_config
   bool piracy;
 };
 
-extern QtFrotzView* global_qtfrotzwindow;
+extern KoboFrotzView* global_kobofrotzwindow;
 
 
-#endif
+#endif // KOBOFROTZ_H

@@ -1,5 +1,5 @@
-#ifndef QtFrotzView_H
-#define QtFrotzView_H
+#ifndef KoboFrotzView_H
+#define KoboFrotzView_H
 
 #include <QWidget>
 #include <QList>
@@ -8,18 +8,18 @@
 #include "kosettingsdialog.h"
 
 namespace Ui {
-class QtFrotzView;
+class KoboFrotzView;
 }
 
-class QtFrotzView : public QWidget
+class KoboFrotzView : public QWidget
 {
     Q_OBJECT
     public:
 
       typedef enum {None, Key, Line, Mouse, Timer, Exit} EventType;
 
-      QtFrotzView(QWidget *parent = 0);
-      ~QtFrotzView();
+      KoboFrotzView(QWidget *parent = 0);
+      ~KoboFrotzView();
 
 public slots:
       int getFontData(int font, int *height, int *width) const;
@@ -136,4 +136,4 @@ signals:
      void gameQuit();
 };
 
-#endif // QtFrotzView_H
+#endif // KoboFrotzView_H

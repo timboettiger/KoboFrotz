@@ -1,0 +1,41 @@
+# Build directories
+build-kobo/
+build/
+dist/
+
+# Toolchain (downloaded by setup-toolchain.sh)
+toolchain/
+
+# Generated scripts
+build-docker.sh
+
+# Qt generated files
+Makefile
+*.o
+moc_*
+ui_*
+qrc_*
+*.moc
+
+# Compiled binaries
+KoboFrotz
+*.so
+*.a
+
+# IDE files
+.qmake.stash
+*.pro.user
+*.pro.user.*
+.idea/
+*.swp
+*~
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Local configuration (user-specific)
+kobo-build.conf
+_codeql_detected_source_root

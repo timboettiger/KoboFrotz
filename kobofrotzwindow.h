@@ -1,19 +1,19 @@
-#ifndef QTFROTZWINDOW_H
-#define QTFROTZWINDOW_H
+#ifndef KOBOFROTZWINDOW_H
+#define KOBOFROTZWINDOW_H
 
 #include <QMainWindow>
 
 namespace Ui {
-class QtFrotzWindow;
+class KoboFrotzWindow;
 }
 
-class QtFrotzWindow : public QMainWindow
+class KoboFrotzWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit QtFrotzWindow(QWidget *parent = 0);
-    ~QtFrotzWindow();
+    explicit KoboFrotzWindow(QWidget *parent = 0);
+    ~KoboFrotzWindow();
 
 private slots:
     void on_actionExit_triggered();
@@ -43,7 +43,7 @@ private slots:
     void on_frotzView_gameQuit();
 
 private:
-    Ui::QtFrotzWindow *ui;
+    Ui::KoboFrotzWindow *ui;
 };
 
-#endif // QTFROTZWINDOW_H
+#endif // KOBOFROTZWINDOW_H

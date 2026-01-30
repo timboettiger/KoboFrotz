@@ -22,7 +22,7 @@
  */
 
 #include "frotz/frotz.h"
-#include "qtfrotz.h"
+#include "kobofrotz.h"
 
 
 

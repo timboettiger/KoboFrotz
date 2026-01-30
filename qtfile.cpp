@@ -37,7 +37,7 @@
 #include <ctype.h>
 
 #include "frotz/frotz.h"
-#include "qtfrotz.h"
+#include "kobofrotz.h"
 
 /*
  * pathopen

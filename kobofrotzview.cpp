@@ -9,14 +9,16 @@
 #include <QBrush>
 #include <QFileDialog>
 #include <QtConcurrent/QtConcurrent>
+#include <QThread>
 
 #include <QDebug>
 
 // application specific includes
-#include "qtfrotzview.h"
+#include "kobofrotzview.h"
+#include "version.h"
 
 #include "frotz/frotz.h"
-#include "qtfrotz.h"
+#include "kobofrotz.h"
 #include "kofiledialog.h"
 
 #include <iostream>
@@ -34,15 +36,15 @@ extern char **history_view;
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::QtFrotzView
+// KoboFrotzView::KoboFrotzView
 //
 ////////////////////////////////////////////////////////////////////////////
 
-QtFrotzView::QtFrotzView(QWidget *parent)
+KoboFrotzView::KoboFrotzView(QWidget *parent)
   : QWidget(parent),
     running(false)
 {
-  global_qtfrotzwindow = this;
+  global_kobofrotzwindow = this;
   setAttribute(Qt::WA_OpaquePaintEvent,true);
   setFocusPolicy(Qt::StrongFocus);
 
@@ -88,11 +90,11 @@ QtFrotzView::QtFrotzView(QWidget *parent)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::~QtFrotzView
+// KoboFrotzView::~KoboFrotzView
 //
 ////////////////////////////////////////////////////////////////////////////
 
-QtFrotzView::~QtFrotzView()
+KoboFrotzView::~KoboFrotzView()
 {
   delete fm;
 }
@@ -101,11 +103,11 @@ QtFrotzView::~QtFrotzView()
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::erase_screen
+// KoboFrotzView::erase_screen
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::erase_screen()
+void KoboFrotzView::erase_screen()
 {
   erase_area(1,1,height(),width());
   update();
@@ -115,11 +117,11 @@ void QtFrotzView::erase_screen()
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::getFontData
+// KoboFrotzView::getFontData
 //
 ////////////////////////////////////////////////////////////////////////////
 
-int QtFrotzView::getFontData(int font, int *height, int *width) const
+int KoboFrotzView::getFontData(int font, int *height, int *width) const
 {
   if (font != TEXT_FONT && font != FIXED_WIDTH_FONT)
     return 0; // Font not present.
@@ -138,11 +140,11 @@ int QtFrotzView::getFontData(int font, int *height, int *width) const
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::setTextFont
+// KoboFrotzView::setTextFont
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::setTextFont(const QFont& f)
+void KoboFrotzView::setTextFont(const QFont& f)
 {
   // Frotz does not like fonts of different height, so we'll make
   // them the same height by playing with the line distance.
@@ -169,11 +171,11 @@ void QtFrotzView::setTextFont(const QFont& f)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::setFixedFont
+// KoboFrotzView::setFixedFont
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::setFixedFont(const QFont& f)
+void KoboFrotzView::setFixedFont(const QFont& f)
 {
   // Frotz does not like fonts of different height, so we'll make
   // them the same height by playing with the line distance.
@@ -200,11 +202,11 @@ void QtFrotzView::setFixedFont(const QFont& f)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::selectFontAndStyle
+// KoboFrotzView::selectFontAndStyle
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::selectFontAndStyle(int font, int style)
+void KoboFrotzView::selectFontAndStyle(int font, int style)
 {
   flushLineBuffer();
 
@@ -238,16 +240,16 @@ void QtFrotzView::selectFontAndStyle(int font, int style)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::writeString
+// KoboFrotzView::writeString
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::writeString(QString s)
+void KoboFrotzView::writeString(QString s)
 {
     lineBuffer += s;
 }
 
-void QtFrotzView::writeString(QChar c)
+void KoboFrotzView::writeString(QChar c)
 {
     lineBuffer += c;
 }
@@ -256,11 +258,11 @@ void QtFrotzView::writeString(QChar c)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::flushLineBuffer
+// KoboFrotzView::flushLineBuffer
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::flushLineBuffer()
+void KoboFrotzView::flushLineBuffer()
 {
   if (lineBuffer.length() == 0)
     return;
@@ -287,11 +289,11 @@ void QtFrotzView::flushLineBuffer()
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::QtFrotzView
+// KoboFrotzView::KoboFrotzView
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::writeInputLine(int x, char* text, int len, int cursorpos, QChar deletedChar)
+void KoboFrotzView::writeInputLine(int x, char* text, int len, int cursorpos, QChar deletedChar)
 {
   int xCursor = x;
 
@@ -331,11 +333,11 @@ void QtFrotzView::writeInputLine(int x, char* text, int len, int cursorpos, QCha
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::readChar
+// KoboFrotzView::readChar
 //
 ////////////////////////////////////////////////////////////////////////////
 
-unsigned char QtFrotzView::readChar(int timeout)
+unsigned char KoboFrotzView::readChar(int timeout)
 {
   // The original code read as follows:
   //
@@ -357,6 +359,8 @@ unsigned char QtFrotzView::readChar(int timeout)
 
   while (!event){			// Wait for any notable event
      qApp->processEvents();
+     // Small delay to reduce CPU usage on E Ink devices
+     QThread::msleep(10);
   }
 
   if (timeout)				// Ensure timeout stopped
@@ -374,13 +378,13 @@ unsigned char QtFrotzView::readChar(int timeout)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::readLine
+// KoboFrotzView::readLine
 //
 //  buf can contain preloaded text which is already printed.
 //
 ////////////////////////////////////////////////////////////////////////////
 
-unsigned char QtFrotzView::readLine(int max, zchar *buf, int timeout,
+unsigned char KoboFrotzView::readLine(int max, zchar *buf, int timeout,
   int width, int continued)
 {
   flushLineBuffer();
@@ -421,7 +425,7 @@ unsigned char QtFrotzView::readLine(int max, zchar *buf, int timeout,
     // Repaint input line.
 
     writeInputLine(xPos0, (char*)buf, len, scrpos);
-    xPos = xPos0; // We'll update the cursos position later.
+    xPos = xPos0; // We'll update the cursor position later.
 
     // Process key.
 
@@ -462,7 +466,7 @@ unsigned char QtFrotzView::readLine(int max, zchar *buf, int timeout,
 
     switch (ch)
     {
-      case ZC_BACKSPACE: /* Delete preceeding character */
+      case ZC_BACKSPACE: /* Delete preceding character */
         if (scrpos != 0)
           {
             QString qbuf = QString::fromLatin1((char*)buf);
@@ -646,11 +650,11 @@ unsigned char QtFrotzView::readLine(int max, zchar *buf, int timeout,
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::morePrompt
+// KoboFrotzView::morePrompt
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::morePrompt()
+void KoboFrotzView::morePrompt()
 {
   // Save current line.
 
@@ -682,11 +686,11 @@ void QtFrotzView::morePrompt()
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::erase_area
+// KoboFrotzView::erase_area
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::erase_area(int top, int left, int bottom, int right)
+void KoboFrotzView::erase_area(int top, int left, int bottom, int right)
 {
   QPainter p(&screenBuffer);
   p.fillRect(left, top, right - left + 1, bottom - top + 1, bgColor);
@@ -697,11 +701,11 @@ void QtFrotzView::erase_area(int top, int left, int bottom, int right)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::scroll_area
+// KoboFrotzView::scroll_area
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::scroll_area(int top, int left, int bottom, int right,
+void KoboFrotzView::scroll_area(int top, int left, int bottom, int right,
   int units)
 {
   flushLineBuffer();
@@ -734,7 +738,7 @@ void QtFrotzView::scroll_area(int top, int left, int bottom, int right,
   update();
 }
 
-void QtFrotzView::quit()
+void KoboFrotzView::quit()
 {
     if(!running){
         qApp->quit();
@@ -743,33 +747,33 @@ void QtFrotzView::quit()
     key = ZC_HKEY_QUIT;
 }
 
-void QtFrotzView::help()
+void KoboFrotzView::help()
 {
     event = Key;
     key = ZC_HKEY_HELP;
 }
 
-void QtFrotzView::save(QString slot)
+void KoboFrotzView::save(QString slot)
 {
     if(!running) return;
     quicksaveloadslot = slot;
     forceInput("SAVE");
 }
 
-void QtFrotzView::restore(QString slot)
+void KoboFrotzView::restore(QString slot)
 {
     if(!running) return;
     quicksaveloadslot = slot;
     forceInput("RESTORE");
 }
 
-void QtFrotzView::settings()
+void KoboFrotzView::settings()
 {
     curSettings = KoSettingsDialog::getSettings(curSettings);
     saveSettings();
 }
 
-QString QtFrotzView::getFileName(QString defaultFileName, int flag)
+QString KoboFrotzView::getFileName(QString defaultFileName, int flag)
 {
     if(!running) return QString();
     bool save = false;
@@ -780,33 +784,40 @@ QString QtFrotzView::getFileName(QString defaultFileName, int flag)
       case FILE_SAVE:
         filter  = QObject::tr("*.sav");
         caption = QObject::tr("Save game...");
+        extension = "sav";
         save = true;
         break;
       case FILE_RESTORE:
         filter  = QObject::tr("*.sav");
         caption = QObject::tr("Restore game...");
+        extension = "sav";
         break;
       case FILE_SCRIPT:
         filter  = QObject::tr("*.src");
         caption = QObject::tr("Save script...");
+        extension = "src";
         save = true;
         break;
       case FILE_RECORD:
         filter  = QObject::tr("*.rec");
         caption = QObject::tr("Record commands...");
+        extension = "rec";
         break;
       case FILE_PLAYBACK:
         filter  = QObject::tr("*.rec");
         caption = QObject::tr("Play back commands...");
+        extension = "rec";
         break;
       case FILE_SAVE_AUX:
         filter  = QObject::tr("*.aux");
         caption = QObject::tr("Save auxiliary file...");
+        extension = "aux";
         save = true;
         break;
       case FILE_LOAD_AUX:
         filter  = QObject::tr("*.aux");
         caption = QObject::tr("Restore auxiliary file...");
+        extension = "aux";
         break;
     }
 
@@ -822,13 +833,13 @@ QString QtFrotzView::getFileName(QString defaultFileName, int flag)
     }
 }
 
-void QtFrotzView::loadSettings()
+void KoboFrotzView::loadSettings()
 {
     QSettings settings("frotz.ini",QSettings::IniFormat,this);
     curSettings.insert(KoSettingsDialog::FontSize,settings.value("FontSize","8"));
 }
 
-void QtFrotzView::saveSettings()
+void KoboFrotzView::saveSettings()
 {
     QSettings settings("frotz.ini",QSettings::IniFormat,this);
     settings.setValue("FontSize",curSettings.value(KoSettingsDialog::FontSize,8));
@@ -838,11 +849,11 @@ void QtFrotzView::saveSettings()
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::resizeEvent
+// KoboFrotzView::resizeEvent
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::resizeEvent(QResizeEvent* e)
+void KoboFrotzView::resizeEvent(QResizeEvent* e)
 {
   screenBuffer = QPixmap(width(),height());
   erase_screen();
@@ -864,28 +875,49 @@ void QtFrotzView::resizeEvent(QResizeEvent* e)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::paintEvent
+// KoboFrotzView::paintEvent
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::paintEvent(QPaintEvent* e)
+void KoboFrotzView::paintEvent(QPaintEvent* e)
 {
   QRect r = e->rect();
   QPainter p(this);
-  p.fillRect(0,0,width(),height(),Qt::red);
+  p.fillRect(0,0,width(),height(),Qt::white);
   p.drawPixmap(r.left(),r.top(), screenBuffer, r.left(), r.top(),
                             r.width(), r.height());
+  
+  // Display version info when no game is running
+  if (!running) {
+    p.setPen(Qt::black);
+    QFont versionFont = font();
+    versionFont.setPointSize(10);
+    p.setFont(versionFont);
+    
+    // Format version string with 4-digit hex build number (e.g., "KoboFrotz V1.0.0-0001")
+    QString versionText = QString("%1 %2-%3")
+        .arg(KOBOFROTZ_APP_NAME)
+        .arg(KOBOFROTZ_VERSION_STRING)
+        .arg(KOBOFROTZ_BUILD_NUMBER, 4, 16, QChar('0')).toUpper();
+    
+    QFontMetrics vfm(versionFont);
+    // Use width() for Qt 5.10 compatibility, horizontalAdvance() requires Qt 5.11+
+    int textWidth = vfm.width(versionText);
+    
+    // Draw version in bottom-right corner
+    p.drawText(width() - textWidth - 10, height() - 10, versionText);
+  }
 }
 
 
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::keyPressEvent
+// KoboFrotzView::keyPressEvent
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::keyPressEvent(QKeyEvent* e)
+void KoboFrotzView::keyPressEvent(QKeyEvent* e)
 {
   event = Key;
 
@@ -969,27 +1001,27 @@ void QtFrotzView::keyPressEvent(QKeyEvent* e)
 
 ////////////////////////////////////////////////////////////////////////////
 //
-// QtFrotzView::timedOut
+// KoboFrotzView::timedOut
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void QtFrotzView::timedOut()
+void KoboFrotzView::timedOut()
 {
   event = Timer;
   key = ZC_TIME_OUT;
 }
 
-void QtFrotzView::start()
+void KoboFrotzView::start()
 {
     QString path = KoFileDialog::getOpenFile(QString(),QStringList()<<"*.z?"<<"*.dat"<<"*.zblorb"<<"*.zlb");
     if(path.isEmpty()) return;
 
     setTextFont(QFont(font().family(),curSettings.value(KoSettingsDialog::FontSize).toInt()));
     setFixedFont(QFont(font().family(),curSettings.value(KoSettingsDialog::FontSize).toInt()));
-    QtConcurrent::run(this,&QtFrotzView::run,path,QFileInfo(path).baseName());
+    QtConcurrent::run(this,&KoboFrotzView::run,path,QFileInfo(path).baseName());
 }
 
-void QtFrotzView::run(QString filename, QString shortname)
+void KoboFrotzView::run(QString filename, QString shortname)
 {
     emit gameStart();
     running = true;
