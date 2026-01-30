@@ -165,13 +165,6 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 export LD_LIBRARY_PATH="$SCRIPT_DIR/lib:$LD_LIBRARY_PATH"
 export QT_PLUGIN_PATH="$SCRIPT_DIR/plugins"
 
-# Qt platform settings for Kobo
-if [ -f "$SCRIPT_DIR/plugins/platforms/libkobo.so" ]; then
-    export QT_QPA_PLATFORM=kobo
-else
-    export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
-fi
-
 # E-Ink display optimizations
 export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS="rotate=0"
 export QT_QPA_GENERIC_PLUGINS="evdevtouch:/dev/input/event1"
@@ -182,8 +175,19 @@ export QT_QPA_NO_HWSURFACE=1
 # Working directory
 cd "$SCRIPT_DIR"
 
-# Start KoboFrotz
-exec ./KoboFrotz "$@"
+# Prefer Kobo platform plugin but fall back to linuxfb if it fails
+if [ -f "$SCRIPT_DIR/plugins/platforms/libkobo.so" ]; then
+    export QT_QPA_PLATFORM=kobo
+    "$SCRIPT_DIR/KoboFrotz" "$@"
+    if [ $? -ne 0 ]; then
+        echo "Kobo platform plugin failed, falling back to linuxfb..." >&2
+        export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
+        exec "$SCRIPT_DIR/KoboFrotz" "$@"
+    fi
+else
+    export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
+    exec "$SCRIPT_DIR/KoboFrotz" "$@"
+fi
 RUNSCRIPT
 chmod +x /work/dist/KoboFrotz/KoboFrotz.sh
 
