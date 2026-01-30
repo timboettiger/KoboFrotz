@@ -1,5 +1,9 @@
-QtFrotz:
+KoboFrotz:
   Marco Kirchner <kirchnermarco@gmail.com>
+  Tim Böttiger <timboettiger@gmail.com>
+    - Kobo Libra Colour support
+    - Build system improvements
+    - Version management
 
 Kwest main author:
   Peter Bienstman <Peter.Bienstman@UGent.be>

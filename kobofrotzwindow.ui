@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>QtFrotzWindow</class>
- <widget class="QMainWindow" name="QtFrotzWindow">
+ <class>KoboFrotzWindow</class>
+ <widget class="QMainWindow" name="KoboFrotzWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QtFrotzView" name="frotzView" native="true">
+     <widget class="KoboFrotzView" name="frotzView" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -295,9 +295,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QtFrotzView</class>
+   <class>KoboFrotzView</class>
    <extends>QWidget</extends>
-   <header>qtfrotzview.h</header>
+   <header>kobofrotzview.h</header>
    <container>1</container>
    <slots>
     <signal>gameStart()</signal>

@@ -27,13 +27,13 @@
 
 #include "frotz/frotz.h"
 #include <QMessageBox>
-#include "qtfrotzview.h"
-#include "qtfrotz.h"
+#include "kobofrotzview.h"
+#include "kobofrotz.h"
 
 char stripped_story_name[FILENAME_MAX+1];
 char semi_stripped_story_name[FILENAME_MAX+1];
 
-QtFrotzView* global_qtfrotzwindow = 0;
+KoboFrotzView* global_kobofrotzwindow = 0;
 int frotz_fatal_error = 0;
 
 /*
@@ -46,7 +46,7 @@ int frotz_fatal_error = 0;
 void os_fatal(const char *s)
 {
   QString qs = "Fatal error: " + QString(s);
-  QMessageBox::critical(global_qtfrotzwindow,"Sorry!",qs);
+  QMessageBox::critical(global_kobofrotzwindow,"Sorry!",qs);
   frotz_fatal_error = 1;
 }
 
@@ -182,8 +182,8 @@ void os_init_screen()
     if (f_setup.undo_slots == 0)
       h_flags &= ~UNDO_FLAG;
 
-  h_screen_width  = global_qtfrotzwindow->width();
-  h_screen_height = global_qtfrotzwindow->height();
+  h_screen_width  = global_kobofrotzwindow->width();
+  h_screen_height = global_kobofrotzwindow->height();
 
   int w,h;
   os_font_data(FIXED_WIDTH_FONT, &h, &w);
@@ -226,8 +226,8 @@ void os_init_screen()
 
 void os_reset_screen(void)
 {
-    QMetaObject::invokeMethod(global_qtfrotzwindow,"flushLineBuffer",Qt::BlockingQueuedConnection);
-    QMetaObject::invokeMethod(global_qtfrotzwindow,"repaint",Qt::BlockingQueuedConnection);
+    QMetaObject::invokeMethod(global_kobofrotzwindow,"flushLineBuffer",Qt::BlockingQueuedConnection);
+    QMetaObject::invokeMethod(global_kobofrotzwindow,"repaint",Qt::BlockingQueuedConnection);
 }
 
 

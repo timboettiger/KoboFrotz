@@ -1,133 +1,133 @@
-#include "qtfrotzwindow.h"
-#include "ui_qtfrotzwindow.h"
+#include "kobofrotzwindow.h"
+#include "ui_kobofrotzwindow.h"
 
-QtFrotzWindow::QtFrotzWindow(QWidget *parent) :
+KoboFrotzWindow::KoboFrotzWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::QtFrotzWindow)
+    ui(new Ui::KoboFrotzWindow)
 {
     ui->setupUi(this);
 }
 
-QtFrotzWindow::~QtFrotzWindow()
+KoboFrotzWindow::~KoboFrotzWindow()
 {
     delete ui;
 }
 
-void QtFrotzWindow::on_actionExit_triggered()
+void KoboFrotzWindow::on_actionExit_triggered()
 {
     ui->frotzView->quit();
 }
 
-void QtFrotzWindow::on_actionSave_triggered()
+void KoboFrotzWindow::on_actionSave_triggered()
 {
     ui->frotzView->save();
 }
 
-void QtFrotzWindow::on_actionSaveSlot1_triggered()
+void KoboFrotzWindow::on_actionSaveSlot1_triggered()
 {
     ui->frotzView->save("1");
 }
 
-void QtFrotzWindow::on_actionSaveSlot2_triggered()
+void KoboFrotzWindow::on_actionSaveSlot2_triggered()
 {
     ui->frotzView->save("2");
 }
 
-void QtFrotzWindow::on_actionSaveSlot3_triggered()
+void KoboFrotzWindow::on_actionSaveSlot3_triggered()
 {
     ui->frotzView->save("3");
 }
 
-void QtFrotzWindow::on_actionSaveSlot4_triggered()
+void KoboFrotzWindow::on_actionSaveSlot4_triggered()
 {
     ui->frotzView->save("4");
 }
 
-void QtFrotzWindow::on_actionSaveSlot5_triggered()
+void KoboFrotzWindow::on_actionSaveSlot5_triggered()
 {
     ui->frotzView->save("5");
 }
 
-void QtFrotzWindow::on_actionSaveSlot6_triggered()
+void KoboFrotzWindow::on_actionSaveSlot6_triggered()
 {
     ui->frotzView->save("6");
 }
 
-void QtFrotzWindow::on_actionSaveSlot7_triggered()
+void KoboFrotzWindow::on_actionSaveSlot7_triggered()
 {
     ui->frotzView->save("7");
 }
 
-void QtFrotzWindow::on_actionSaveSlot8_triggered()
+void KoboFrotzWindow::on_actionSaveSlot8_triggered()
 {
     ui->frotzView->save("8");
 }
 
-void QtFrotzWindow::on_actionSaveSlot9_triggered()
+void KoboFrotzWindow::on_actionSaveSlot9_triggered()
 {
     ui->frotzView->save("9");
 }
 
-void QtFrotzWindow::on_actionRestore_triggered()
+void KoboFrotzWindow::on_actionRestore_triggered()
 {
     ui->frotzView->restore();
 }
 
-void QtFrotzWindow::on_actionRestoreSlot1_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot1_triggered()
 {
     ui->frotzView->restore("1");
 }
 
-void QtFrotzWindow::on_actionRestoreSlot2_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot2_triggered()
 {
     ui->frotzView->restore("2");
 }
 
-void QtFrotzWindow::on_actionRestoreSlot3_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot3_triggered()
 {
     ui->frotzView->restore("3");
 }
 
-void QtFrotzWindow::on_actionRestoreSlot4_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot4_triggered()
 {
     ui->frotzView->restore("4");
 }
 
-void QtFrotzWindow::on_actionRestoreSlot5_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot5_triggered()
 {
     ui->frotzView->restore("5");
 }
 
-void QtFrotzWindow::on_actionRestoreSlot6_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot6_triggered()
 {
     ui->frotzView->restore("6");
 }
 
-void QtFrotzWindow::on_actionRestoreSlot7_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot7_triggered()
 {
     ui->frotzView->restore("7");
 }
 
-void QtFrotzWindow::on_actionRestoreSlot8_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot8_triggered()
 {
     ui->frotzView->restore("8");
 }
 
-void QtFrotzWindow::on_actionRestoreSlot9_triggered()
+void KoboFrotzWindow::on_actionRestoreSlot9_triggered()
 {
     ui->frotzView->restore("9");
 }
-void QtFrotzWindow::on_actionHelp_triggered()
+void KoboFrotzWindow::on_actionHelp_triggered()
 {
     ui->frotzView->help();
 }
 
-void QtFrotzWindow::on_actionSettings_triggered()
+void KoboFrotzWindow::on_actionSettings_triggered()
 {
     ui->frotzView->settings();
 }
 
-void QtFrotzWindow::on_frotzView_gameStart()
+void KoboFrotzWindow::on_frotzView_gameStart()
 {
     ui->actionSave->setEnabled(true);
     ui->actionSaveSlot1->setEnabled(true);
@@ -154,7 +154,7 @@ void QtFrotzWindow::on_frotzView_gameStart()
     ui->actionStart->setEnabled(false);
 }
 
-void QtFrotzWindow::on_frotzView_gameQuit()
+void KoboFrotzWindow::on_frotzView_gameQuit()
 {
     ui->actionSave->setEnabled(false);
     ui->actionSaveSlot1->setEnabled(false);

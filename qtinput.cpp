@@ -170,7 +170,7 @@ int unix_history_forward(zchar *str, int searchlen, int maxlen)
 zchar os_read_line(int max, zchar *buf, int timeout, int width, int continued)
 {
     zchar ret;
-    QMetaObject::invokeMethod(global_qtfrotzwindow,
+    QMetaObject::invokeMethod(global_kobofrotzwindow,
                           "readLine",
                           Qt::BlockingQueuedConnection,
                           Q_RETURN_ARG(unsigned char, ret),
@@ -181,7 +181,7 @@ zchar os_read_line(int max, zchar *buf, int timeout, int width, int continued)
                               Q_ARG(int, continued)
                           );
     return ret;
-//  return global_qtfrotzwindow->readLine(max, buf, timeout, width, continued);
+//  return global_kobofrotzwindow->readLine(max, buf, timeout, width, continued);
 }
 
 
@@ -196,7 +196,7 @@ zchar os_read_line(int max, zchar *buf, int timeout, int width, int continued)
 
 zchar os_read_key(int timeout, int cursor)
 {
-  QtFrotzView* kv = global_qtfrotzwindow;
+  KoboFrotzView* kv = global_kobofrotzwindow;
 
   kv->flushLineBuffer();
   kv->update();
@@ -240,7 +240,7 @@ int os_read_file_name(char *file_name, const char *default_name, int flag)
 
   // Get filename.
   QString filename;
-  QMetaObject::invokeMethod(global_qtfrotzwindow,
+  QMetaObject::invokeMethod(global_kobofrotzwindow,
                         "getFileName",
                         Qt::BlockingQueuedConnection,
                         Q_RETURN_ARG(QString, filename),

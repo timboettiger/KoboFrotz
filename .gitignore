@@ -1,9 +1,9 @@
-# Build-Verzeichnisse
+# Build directories
 build-kobo/
 build/
 dist/
 
-# Qt-generierte Dateien
+# Qt generated files
 Makefile
 *.o
 moc_*
@@ -11,12 +11,12 @@ ui_*
 qrc_*
 *.moc
 
-# Kompilierte Binaries
-QtFrotz
+# Compiled binaries
+KoboFrotz
 *.so
 *.a
 
-# IDE-Dateien
+# IDE files
 .qmake.stash
 *.pro.user
 *.pro.user.*
@@ -29,3 +29,6 @@ QtFrotz
 
 # Logs
 *.log
+
+# Local configuration (user-specific)
+kobo-build.conf

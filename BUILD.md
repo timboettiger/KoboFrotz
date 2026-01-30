@@ -1,55 +1,55 @@
-# KoboFrotz Build-Anleitung für Kobo Libra Colour
+# KoboFrotz Build Guide for Kobo Libra Colour
 
-Diese Anleitung beschreibt, wie KoboFrotz für den Kobo Libra Colour (Firmware 4.44+) cross-kompiliert und mit NickelMenu gestartet werden kann.
+This guide describes how to cross-compile KoboFrotz for Kobo Libra Colour (Firmware 4.44+) and launch it with NickelMenu.
 
-## Voraussetzungen
+## Prerequisites
 
 ### Hardware
-- Kobo Libra Colour (Modell N428)
-- Firmware Version 4.44 oder höher
-- NickelMenu installiert
+- Kobo Libra Colour (Model N428)
+- Firmware Version 4.44 or higher
+- NickelMenu installed
 
-### Entwicklungsumgebung
-- Linux-basiertes Betriebssystem (Ubuntu 20.04+ empfohlen)
+### Development Environment
+- Linux-based operating system (Ubuntu 20.04+ recommended)
 - Git
-- Grundlegende Build-Tools (build-essential, autoconf, automake, libtool)
+- Basic build tools (build-essential, autoconf, automake, libtool)
 
 ## 1. Toolchain Installation
 
-### Option A: kobo-qt-setup-scripts (Empfohlen)
+### Option A: kobo-qt-setup-scripts (Recommended)
 
 ```bash
-# Repository klonen
+# Clone repository
 git clone https://github.com/Rain92/kobo-qt-setup-scripts.git
 cd kobo-qt-setup-scripts
 
-# Toolchain installieren
+# Install toolchain
 ./install_toolchain.sh
 
-# Qt für Kobo bauen
+# Build Qt for Kobo
 ./get_qt.sh
 ./build_qt.sh
 ```
 
-### Option B: Docker-basierte Entwicklung
+### Option B: Docker-based Development
 
 ```bash
-# Docker-Image verwenden
+# Use Docker image
 docker pull rain92/kobo-qt-dev
 docker run -it -v $(pwd):/workspace rain92/kobo-qt-dev
 ```
 
-## 2. Umgebungsvariablen setzen
+## 2. Set Environment Variables
 
 ```bash
-# Pfad zur Toolchain
+# Path to toolchain
 export KOBO_TOOLCHAIN=~/x-tools/arm-kobo-linux-gnueabihf
 export PATH=$KOBO_TOOLCHAIN/bin:$PATH
 
-# Cross-Compiler Präfix
+# Cross-compiler prefix
 export CROSS_COMPILE=arm-kobo-linux-gnueabihf-
 
-# Qt für Kobo
+# Qt for Kobo
 export QT_KOBO=~/qt-kobo
 export PATH=$QT_KOBO/bin:$PATH
 
@@ -57,137 +57,137 @@ export PATH=$QT_KOBO/bin:$PATH
 export SYSROOT=$KOBO_TOOLCHAIN/arm-kobo-linux-gnueabihf/sysroot
 ```
 
-## 3. KoboFrotz kompilieren
+## 3. Compile KoboFrotz
 
 ```bash
-# In das KoboFrotz-Verzeichnis wechseln
+# Navigate to KoboFrotz directory
 cd KoboFrotz
 
-# Build-Skript verwenden (empfohlen)
+# Use the build script (recommended)
 ./build-kobo.sh
 
-# Oder manuell:
+# Or manually:
 mkdir -p build-kobo
 cd build-kobo
-$QT_KOBO/bin/qmake ../QtFrotz.pro
+$QT_KOBO/bin/qmake ../KoboFrotz.pro
 make -j$(nproc)
 ```
 
-## 4. Deployment auf den Kobo
+## 4. Deploy to Kobo
 
-### Verzeichnisstruktur auf dem Kobo erstellen
+### Create Directory Structure on Kobo
 
 ```bash
-# USB-Verbindung herstellen und Kobo mounten
-# Dann folgende Verzeichnisse erstellen:
+# Connect via USB and mount the Kobo
+# Then create the following directories:
 
 /mnt/onboard/.adds/
-├── qtfrotz/
-│   ├── QtFrotz              # Die kompilierte Anwendung
-│   ├── libs/                # Benötigte Qt-Bibliotheken
+├── kobofrotz/
+│   ├── KoboFrotz              # The compiled application
+│   ├── libs/                  # Required Qt libraries
 │   │   ├── libQt5Core.so.5
 │   │   ├── libQt5Gui.so.5
 │   │   ├── libQt5Widgets.so.5
 │   │   └── ...
-│   ├── plugins/             # Qt-Plugins
+│   ├── plugins/               # Qt plugins
 │   │   └── platforms/
 │   │       └── libkobo.so
-│   ├── games/               # Z-Machine Spiele (.z3, .z5, .z8, etc.)
-│   └── saves/               # Spielstände
+│   ├── games/                 # Z-Machine games (.z3, .z5, .z8, etc.)
+│   └── saves/                 # Save files
 ├── nm/
-│   └── config               # NickelMenu Konfiguration
-└── qt-linux-*/              # Qt-Bibliotheken (von deploy_qt.sh)
+│   └── config                 # NickelMenu configuration
+└── qt-linux-*/                # Qt libraries (from deploy_qt.sh)
 ```
 
-### Dateien kopieren
+### Copy Files
 
 ```bash
-# Deployment-Skript verwenden
+# Use deployment script
 ./deploy-kobo.sh /media/$USER/KOBOeReader
 
-# Oder manuell kopieren:
-cp build-kobo/QtFrotz /Volumes/KOBOeReader/.adds/qtfrotz/
+# Or manually:
+cp build-kobo/KoboFrotz /Volumes/KOBOeReader/.adds/kobofrotz/
 ```
 
-## 5. NickelMenu konfigurieren
+## 5. Configure NickelMenu
 
-### NickelMenu installieren (falls noch nicht vorhanden)
+### Install NickelMenu (if not already installed)
 
-1. NickelMenu von https://pgaskin.net/NickelMenu/ herunterladen
-2. Die `KoboRoot.tgz` Datei in das `.kobo` Verzeichnis auf dem Kobo kopieren
-3. Kobo sicher auswerfen und neu starten
+1. Download NickelMenu from https://pgaskin.net/NickelMenu/
+2. Copy the `KoboRoot.tgz` file to the `.kobo` directory on the Kobo
+3. Safely eject the Kobo and restart
 
-### NickelMenu-Eintrag erstellen
+### Create NickelMenu Entry
 
-Erstelle die Datei `.adds/nm/config` auf dem Kobo:
+Create the file `.adds/nm/config` on the Kobo:
 
 ```
-menu_item :main :QtFrotz (Z-Machine) :cmd_spawn :quiet:/mnt/onboard/.adds/qtfrotz/run.sh
+menu_item :main :KoboFrotz (Z-Machine) :cmd_spawn :quiet:/mnt/onboard/.adds/kobofrotz/run.sh
   chain_success :nickel_misc :rescan_books_full
 ```
 
-## 6. Start-Skript erstellen
+## 6. Create Startup Script
 
-Erstelle `/mnt/onboard/.adds/qtfrotz/run.sh`:
+Create `/mnt/onboard/.adds/kobofrotz/run.sh`:
 
 ```bash
 #!/bin/sh
 
-# Qt-Umgebung setzen
+# Qt environment
 export LD_LIBRARY_PATH=/mnt/onboard/.adds/qt-linux-5.15-kobo/lib:$LD_LIBRARY_PATH
 export QT_QPA_PLATFORM=kobo
 
-# E-Ink Display-Einstellungen
+# E Ink display settings
 export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS="rotate=0"
 export QT_QPA_GENERIC_PLUGINS="evdevtouch:/dev/input/event1"
 
-# Arbeitsverzeichnis setzen
-cd /mnt/onboard/.adds/qtfrotz
+# Working directory
+cd /mnt/onboard/.adds/kobofrotz
 
-# Anwendung starten
-./QtFrotz
+# Start application
+./KoboFrotz
 ```
 
-Mache das Skript ausführbar:
+Make the script executable:
 ```bash
-chmod +x /mnt/onboard/.adds/qtfrotz/run.sh
+chmod +x /mnt/onboard/.adds/kobofrotz/run.sh
 ```
 
-## Kobo Libra Colour spezifische Hinweise
+## Kobo Libra Colour Specific Notes
 
-### Bildschirmauflösung
-- 1264 x 1680 Pixel (Portrait)
-- 1680 x 1264 Pixel (Landscape)
-- Das Farbdisplay unterstützt 4096 Farben (E Ink Kaleido)
+### Screen Resolution
+- 1264 x 1680 pixels (Portrait)
+- 1680 x 1264 pixels (Landscape)
+- Color display supports 4096 colors (E Ink Kaleido)
 
-### E Ink Optimierungen
-- Verwende hohen Kontrast (Schwarz/Weiß) für beste Lesbarkeit
-- Minimiere Bildschirmaktualisierungen für längere Akkulaufzeit
-- Die Anwendung nutzt bereits `/etc/eink.qss` für E Ink-optimierte Styles
+### E Ink Optimizations
+- Use high contrast (black/white) for best readability
+- Minimize screen updates for longer battery life
+- The application already uses `/etc/eink.qss` for E Ink-optimized styles
 
-### Touch-Input
-Der Libra Colour verwendet einen kapazitiven Touchscreen. Das qt5-kobo-platform-plugin 
-unterstützt diesen automatisch.
+### Touch Input
+The Libra Colour uses a capacitive touchscreen. The qt5-kobo-platform-plugin
+supports this automatically.
 
-## Fehlerbehebung
+## Troubleshooting
 
-### Anwendung startet nicht
-1. Prüfe, ob alle Bibliotheken vorhanden sind:
+### Application Won't Start
+1. Check if all libraries are present:
    ```bash
-   ldd /mnt/onboard/.adds/qtfrotz/QtFrotz
+   ldd /mnt/onboard/.adds/kobofrotz/KoboFrotz
    ```
-2. Stelle sicher, dass das run.sh Skript ausführbar ist
-3. Überprüfe die NickelMenu-Konfiguration
+2. Make sure run.sh is executable
+3. Verify NickelMenu configuration
 
-### Bibliotheken fehlen
-Verwende das `deploy_qt.sh` Skript aus kobo-qt-setup-scripts, um alle
-benötigten Bibliotheken zu installieren.
+### Missing Libraries
+Use the `deploy_qt.sh` script from kobo-qt-setup-scripts to install
+all required libraries.
 
-### Touch funktioniert nicht
-Passe die `QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS` im run.sh an.
-Für den Libra Colour könnte eine Rotation erforderlich sein.
+### Touch Not Working
+Adjust `QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS` in run.sh.
+Rotation may be required for Libra Colour.
 
-## Weiterführende Links
+## Additional Resources
 
 - [kobo-qt-setup-scripts](https://github.com/Rain92/kobo-qt-setup-scripts)
 - [qt5-kobo-platform-plugin](https://github.com/Rain92/qt5-kobo-platform-plugin)

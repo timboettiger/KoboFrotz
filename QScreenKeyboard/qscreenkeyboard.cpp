@@ -44,7 +44,7 @@ QScreenKeyboard::QScreenKeyboard(QWidget *parent, QString layout) :
     mainLayout->addWidget(line2);
 
     QLabel * label = new QLabel(this);
-    label->setText("QtFrotz");
+    label->setText("KoboFrotz");
     label->setFont(QFont("Wnter"));
     label->setAlignment(Qt::AlignCenter);
     label->setStyleSheet("font-weight: bold");

@@ -8,9 +8,16 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QtFrotz
+TARGET = KoboFrotz
 TEMPLATE = app
 
+# Auto-increment build number before compilation
+unix {
+    PRE_TARGETDEPS += increment_build
+    increment_build.commands = $$PWD/increment-build.sh $$PWD/version.h
+    increment_build.target = increment_build
+    QMAKE_EXTRA_TARGETS += increment_build
+}
 
 SOURCES += \
     qttext.cpp \
@@ -40,20 +47,20 @@ SOURCES += \
     frotz/err.c \
     frotz/buffer.c \
     main.cpp \
-    qtfrotzview.cpp \
-    qtfrotzwindow.cpp
+    kobofrotzview.cpp \
+    kobofrotzwindow.cpp
 
 HEADERS  += \
     common/setup.h \
     common/frotz.h \
-    k_frotz.h \
-    qtfrotzview.h \
-    qtfrotzwindow.h
+    kobofrotz.h \
+    kobofrotzview.h \
+    kobofrotzwindow.h \
+    version.h
 
 FORMS    += \
-    qtfrotzwindow.ui
+    kobofrotzwindow.ui
 
 include(QScreenKeyboard/QScreenKeyboard.pri)
 include(KoFileDialog/KoFileDialog.pri)
 include(KoSettingsDialog/KoSettingsDialog.pri)
-
