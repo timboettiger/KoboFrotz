@@ -1,0 +1,31 @@
+# Build-Verzeichnisse
+build-kobo/
+build/
+dist/
+
+# Qt-generierte Dateien
+Makefile
+*.o
+moc_*
+ui_*
+qrc_*
+*.moc
+
+# Kompilierte Binaries
+QtFrotz
+*.so
+*.a
+
+# IDE-Dateien
+.qmake.stash
+*.pro.user
+*.pro.user.*
+.idea/
+*.swp
+*~
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
