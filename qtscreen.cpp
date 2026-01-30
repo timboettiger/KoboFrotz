@@ -19,7 +19,7 @@
  */
 
 #include "frotz/frotz.h"
-#include "qtfrotz.h"
+#include "kobofrotz.h"
 
 /*
  * os_erase_area
@@ -32,7 +32,7 @@
 void os_erase_area(int top, int left, int bottom, int right)
 {
 
-    QMetaObject::invokeMethod(global_qtfrotzwindow,"erase_area",Qt::BlockingQueuedConnection,Q_ARG(int,top-1),Q_ARG(int,left-1),Q_ARG(int,bottom-1),Q_ARG(int,right-1));
+    QMetaObject::invokeMethod(global_kobofrotzwindow,"erase_area",Qt::BlockingQueuedConnection,Q_ARG(int,top-1),Q_ARG(int,left-1),Q_ARG(int,bottom-1),Q_ARG(int,right-1));
 }
 
 
@@ -51,5 +51,5 @@ void os_scroll_area(int top, int left, int bottom, int right, int units)
   if (units == 0)
     return;
 
-  QMetaObject::invokeMethod(global_qtfrotzwindow,"scroll_area",Qt::BlockingQueuedConnection,Q_ARG(int,top-1),Q_ARG(int,left-1),Q_ARG(int,bottom-1),Q_ARG(int,right-1),Q_ARG(int,units));
+  QMetaObject::invokeMethod(global_kobofrotzwindow,"scroll_area",Qt::BlockingQueuedConnection,Q_ARG(int,top-1),Q_ARG(int,left-1),Q_ARG(int,bottom-1),Q_ARG(int,right-1),Q_ARG(int,units));
 }

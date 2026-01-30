@@ -51,8 +51,8 @@ SOURCES += \
     kobofrotzwindow.cpp
 
 HEADERS  += \
-    common/setup.h \
-    common/frotz.h \
+    frotz/setup.h \
+    frotz/frotz.h \
     kobofrotz.h \
     kobofrotzview.h \
     kobofrotzwindow.h \

@@ -19,7 +19,7 @@
  */
 
 #include "frotz/frotz.h"
-#include "qtfrotz.h"
+#include "kobofrotz.h"
 
 static int current_style = 0;
 static int current_zfont = TEXT_FONT;
@@ -43,7 +43,7 @@ static int current_zfont = TEXT_FONT;
 int os_font_data(int font, int *height, int *width)
 {
     int ret;
-    QMetaObject::invokeMethod(global_qtfrotzwindow,
+    QMetaObject::invokeMethod(global_kobofrotzwindow,
                           "getFontData",
                           Qt::BlockingQueuedConnection,
                           Q_RETURN_ARG(int, ret),
@@ -89,13 +89,13 @@ int os_font_data(int font, int *height, int *width)
 void os_set_colour(int new_foreground, int new_background)
 {
 
-  QMetaObject::invokeMethod(global_qtfrotzwindow,"setFgColor",Qt::BlockingQueuedConnection,Q_ARG(QColor,new_foreground));
-  QMetaObject::invokeMethod(global_qtfrotzwindow,"setBgColor",Qt::BlockingQueuedConnection,Q_ARG(QColor,new_background));
+  QMetaObject::invokeMethod(global_kobofrotzwindow,"setFgColor",Qt::BlockingQueuedConnection,Q_ARG(QColor,new_foreground));
+  QMetaObject::invokeMethod(global_kobofrotzwindow,"setBgColor",Qt::BlockingQueuedConnection,Q_ARG(QColor,new_background));
 
   if (new_foreground == 1)
-    QMetaObject::invokeMethod(global_qtfrotzwindow,"resetFgColor",Qt::BlockingQueuedConnection);
+    QMetaObject::invokeMethod(global_kobofrotzwindow,"resetFgColor",Qt::BlockingQueuedConnection);
   if (new_background == 1)
-    QMetaObject::invokeMethod(global_qtfrotzwindow,"resetBgColor",Qt::BlockingQueuedConnection);
+    QMetaObject::invokeMethod(global_kobofrotzwindow,"resetBgColor",Qt::BlockingQueuedConnection);
   os_set_text_style(current_style);
 }
 
@@ -115,7 +115,7 @@ void os_set_colour(int new_foreground, int new_background)
 
 void os_set_text_style(int new_style)
 {
-  QMetaObject::invokeMethod(global_qtfrotzwindow,"selectFontAndStyle",Qt::BlockingQueuedConnection,Q_ARG(int,current_zfont),Q_ARG(int,new_style));
+  QMetaObject::invokeMethod(global_kobofrotzwindow,"selectFontAndStyle",Qt::BlockingQueuedConnection,Q_ARG(int,current_zfont),Q_ARG(int,new_style));
   current_style = new_style;
 }
 
@@ -131,7 +131,7 @@ void os_set_text_style(int new_style)
 
 void os_set_font(int new_font)
 {
-  QMetaObject::invokeMethod(global_qtfrotzwindow,"selectFontAndStyle",Qt::BlockingQueuedConnection,Q_ARG(int,new_font),Q_ARG(int,current_style));
+  QMetaObject::invokeMethod(global_kobofrotzwindow,"selectFontAndStyle",Qt::BlockingQueuedConnection,Q_ARG(int,new_font),Q_ARG(int,current_style));
   current_zfont = new_font;
 }
 
@@ -152,7 +152,7 @@ void os_set_font(int new_font)
 void os_display_char(zchar c)
 {
   if (c == ZC_GAP){
-      QMetaObject::invokeMethod(global_qtfrotzwindow,
+      QMetaObject::invokeMethod(global_kobofrotzwindow,
                             "writeString",
                             Qt::BlockingQueuedConnection,
                             Q_ARG(QString,   "  ")
@@ -160,7 +160,7 @@ void os_display_char(zchar c)
       return;
   }
   if (c == ZC_INDENT){
-      QMetaObject::invokeMethod(global_qtfrotzwindow,
+      QMetaObject::invokeMethod(global_kobofrotzwindow,
                             "writeString",
                             Qt::BlockingQueuedConnection,
                             Q_ARG(QString,   "   ")
@@ -168,7 +168,7 @@ void os_display_char(zchar c)
       return;
   }
 
-  QMetaObject::invokeMethod(global_qtfrotzwindow,"writeString",Qt::BlockingQueuedConnection,Q_ARG(QChar,c));
+  QMetaObject::invokeMethod(global_kobofrotzwindow,"writeString",Qt::BlockingQueuedConnection,Q_ARG(QChar,c));
 }
 
 
@@ -191,7 +191,7 @@ void os_display_string(const zchar *s)
       // First flush string buffer.
       if (qs.length())
       {
-        QMetaObject::invokeMethod(global_qtfrotzwindow,"writeString",Qt::BlockingQueuedConnection,Q_ARG(QString,qs));
+        QMetaObject::invokeMethod(global_kobofrotzwindow,"writeString",Qt::BlockingQueuedConnection,Q_ARG(QString,qs));
         qs = "";
       }
 
@@ -206,7 +206,7 @@ void os_display_string(const zchar *s)
       qs += c;
 
   if (qs.length())
-      QMetaObject::invokeMethod(global_qtfrotzwindow,"writeString",Qt::BlockingQueuedConnection,Q_ARG(QString,qs));
+      QMetaObject::invokeMethod(global_kobofrotzwindow,"writeString",Qt::BlockingQueuedConnection,Q_ARG(QString,qs));
 }
 
 
@@ -221,7 +221,7 @@ void os_display_string(const zchar *s)
 int os_char_width(zchar c)
 {
     int ret;
-    QMetaObject::invokeMethod(global_qtfrotzwindow,
+    QMetaObject::invokeMethod(global_kobofrotzwindow,
                           "charWidth",
                           Qt::BlockingQueuedConnection,
                           Q_RETURN_ARG(int, ret),
@@ -269,7 +269,7 @@ int os_string_width(const zchar *s)
 
 void os_set_cursor(int y, int x)
 {
-     QMetaObject::invokeMethod(global_qtfrotzwindow,"setXY",Qt::BlockingQueuedConnection,Q_ARG(int,x-1),Q_ARG(int,y-1));
+     QMetaObject::invokeMethod(global_kobofrotzwindow,"setXY",Qt::BlockingQueuedConnection,Q_ARG(int,x-1),Q_ARG(int,y-1));
 }
 
 
@@ -284,5 +284,5 @@ void os_set_cursor(int y, int x)
 
 void os_more_prompt()
 {
-  QMetaObject::invokeMethod(global_qtfrotzwindow,"morePrompt",Qt::BlockingQueuedConnection);
+  QMetaObject::invokeMethod(global_kobofrotzwindow,"morePrompt",Qt::BlockingQueuedConnection);
 }

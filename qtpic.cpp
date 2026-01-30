@@ -22,7 +22,7 @@
 #include <string.h>
 
 #include "frotz/frotz.h"
-#include "qtfrotz.h"
+#include "kobofrotz.h"
 
 #define PIC_FILE_HEADER_FLAGS 1
 #define PIC_FILE_HEADER_NUM_IMAGES 4

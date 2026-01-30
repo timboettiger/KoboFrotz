@@ -205,6 +205,62 @@ print_instructions() {
     log_info ""
 }
 
+# Desktop build (for testing without Kobo toolchain)
+build_desktop() {
+    log_info "=========================================="
+    log_info "KoboFrotz Desktop Build (for testing)"
+    log_info "=========================================="
+    log_info ""
+    
+    # Check for system Qt
+    if ! command -v qmake &> /dev/null; then
+        log_error "qmake not found. Please install Qt5 development packages:"
+        log_info "  Ubuntu/Debian: sudo apt install qtbase5-dev qt5-qmake"
+        log_info "  Fedora: sudo dnf install qt5-qtbase-devel"
+        log_info "  Arch: sudo pacman -S qt5-base"
+        log_info "  macOS: brew install qt@5"
+        exit 1
+    fi
+    
+    log_info "Using system Qt: $(qmake --version | head -1)"
+    
+    # Increment build number
+    if [ -f "$SCRIPT_DIR/increment-build.sh" ]; then
+        log_info "Incrementing build number..."
+        "$SCRIPT_DIR/increment-build.sh" "$SCRIPT_DIR/version.h"
+    fi
+    
+    # Clean and create build directory
+    DESKTOP_BUILD_DIR="$SCRIPT_DIR/build"
+    if [ -d "$DESKTOP_BUILD_DIR" ]; then
+        rm -rf "$DESKTOP_BUILD_DIR"
+    fi
+    mkdir -p "$DESKTOP_BUILD_DIR"
+    
+    cd "$DESKTOP_BUILD_DIR"
+    
+    log_info "Running qmake..."
+    qmake "$SCRIPT_DIR/KoboFrotz.pro" CONFIG+=release
+    
+    log_info "Compiling..."
+    make -j$(nproc)
+    
+    if [ -f "$DESKTOP_BUILD_DIR/KoboFrotz" ]; then
+        log_info ""
+        log_info "=========================================="
+        log_info "Desktop build successful!"
+        log_info "=========================================="
+        log_info ""
+        log_info "Binary: $DESKTOP_BUILD_DIR/KoboFrotz"
+        log_info ""
+        log_info "To run: $DESKTOP_BUILD_DIR/KoboFrotz"
+        log_info ""
+    else
+        log_error "Build failed - KoboFrotz binary not found"
+        exit 1
+    fi
+}
+
 # Main program
 main() {
     log_info "=========================================="
@@ -215,19 +271,28 @@ main() {
     case "${1:-}" in
         --clean)
             clean_build
-            log_info "Build directory cleaned"
+            rm -rf "$SCRIPT_DIR/build"
+            log_info "Build directories cleaned"
+            exit 0
+            ;;
+        --desktop)
+            build_desktop
             exit 0
             ;;
         --help|-h)
-            echo "Usage: $0 [--clean|--help]"
+            echo "Usage: $0 [--clean|--desktop|--help]"
             echo ""
             echo "Options:"
-            echo "  --clean    Clean the build directory"
+            echo "  --clean    Clean build directories"
+            echo "  --desktop  Build for desktop (testing without Kobo toolchain)"
             echo "  --help     Show this help"
             echo ""
+            echo "For Kobo cross-compilation, run without options."
+            echo "This requires the Kobo toolchain to be installed."
+            echo ""
             echo "Environment variables:"
-            echo "  KOBO_TOOLCHAIN  Path to Kobo toolchain (default: ~/x-tools/arm-kobo-linux-gnueabihf)"
-            echo "  QT_KOBO         Path to Qt for Kobo (default: ~/qt-kobo)"
+            echo "  KOBO_TOOLCHAIN  Path to Kobo toolchain (default: ./toolchain or ~/x-tools/arm-kobo-linux-gnueabihf)"
+            echo "  QT_KOBO         Path to Qt for Kobo (default: ./toolchain/qt-kobo or ~/qt-kobo)"
             exit 0
             ;;
     esac

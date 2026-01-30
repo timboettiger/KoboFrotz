@@ -161,9 +161,14 @@ clone_setup_scripts() {
         log_info "kobo-qt-setup-scripts already exists, updating..."
         cd "$KOBO_QT_SCRIPTS_DIR"
         git pull || log_warn "Could not update, continuing with existing version"
+        git submodule update --init --recursive
     else
-        git clone https://github.com/Rain92/kobo-qt-setup-scripts.git "$KOBO_QT_SCRIPTS_DIR"
+        git clone --recursive https://github.com/Rain92/kobo-qt-setup-scripts.git "$KOBO_QT_SCRIPTS_DIR"
     fi
+    
+    # Ensure submodules are initialized
+    cd "$KOBO_QT_SCRIPTS_DIR"
+    git submodule update --init --recursive
     
     log_info "Setup scripts ready"
 }
