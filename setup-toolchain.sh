@@ -296,6 +296,7 @@ create_docker_helper() {
 #
 # build-docker.sh
 # Build KoboFrotz using Docker (for macOS or systems without native toolchain)
+# Builds ARM binary for Kobo E-Readers
 #
 
 set -e
@@ -303,9 +304,19 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCKER_IMAGE="rain92/kobo-qt-dev"
 
+# Output colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
 # Check if Docker is available
 if ! command -v docker &> /dev/null; then
-    echo "Error: Docker not found. Please install Docker first."
+    log_error "Docker not found. Please install Docker first."
     echo "  macOS: brew install --cask docker"
     echo "  Or download from https://www.docker.com/products/docker-desktop"
     exit 1
@@ -313,23 +324,119 @@ fi
 
 # Check if Docker is running
 if ! docker info &> /dev/null; then
-    echo "Error: Docker daemon is not running. Please start Docker."
+    log_error "Docker daemon is not running. Please start Docker."
     exit 1
 fi
 
-echo "Pulling Docker image (if needed)..."
+log_info "Pulling Docker image (if needed)..."
 docker pull "$DOCKER_IMAGE"
 
 echo ""
-echo "Starting build in Docker container..."
+log_info "Starting ARM cross-compilation build in Docker container..."
 echo ""
 
-# Run build inside Docker
-docker run --rm -v "$SCRIPT_DIR:/workspace" -w /workspace "$DOCKER_IMAGE" \
-    /bin/bash -c "./increment-build.sh && ./build-kobo.sh"
+# Create output directories
+mkdir -p "$SCRIPT_DIR/build-kobo"
+mkdir -p "$SCRIPT_DIR/dist"
+
+# Run build inside Docker (override entrypoint!)
+docker run --rm \
+    --entrypoint /bin/bash \
+    -v "$SCRIPT_DIR:/workspace" \
+    -w /workspace \
+    "$DOCKER_IMAGE" \
+    -c '
+        set -e
+        
+        echo "[Docker] Incrementing build number..."
+        ./increment-build.sh version.h || echo "Warning: Could not increment build"
+        
+        echo "[Docker] Cross-compiler: $(which arm-kobo-linux-gnueabihf-gcc)"
+        echo "[Docker] qmake: /home/user/qt-bin/qt-linux-5.15-kde-kobo/bin/qmake"
+        
+        echo "[Docker] Cleaning build directory..."
+        rm -rf build-kobo/*
+        mkdir -p build-kobo
+        cd build-kobo
+        
+        echo "[Docker] Running qmake..."
+        /home/user/qt-bin/qt-linux-5.15-kde-kobo/bin/qmake ../KoboFrotz.pro CONFIG+=release
+        
+        echo "[Docker] Compiling (this may take a few minutes)..."
+        make -j$(nproc)
+        
+        echo "[Docker] Build result:"
+        ls -la KoboFrotz 2>/dev/null || echo "Binary not found!"
+        file KoboFrotz 2>/dev/null || true
+        
+        cd ..
+        
+        if [ -f build-kobo/KoboFrotz ]; then
+            echo "[Docker] Creating distribution..."
+            mkdir -p dist/kobofrotz/games dist/kobofrotz/saves dist/nm
+            cp build-kobo/KoboFrotz dist/kobofrotz/
+            
+            # Create run script
+            cat > dist/kobofrotz/run.sh << "RUNEOF"
+#!/bin/sh
+KOBOFROTZ_DIR="/mnt/onboard/.adds/kobofrotz"
+QT_LIB_DIR="/mnt/onboard/.adds/qt-linux-5.15-kobo/lib"
+export LD_LIBRARY_PATH="$QT_LIB_DIR:$LD_LIBRARY_PATH"
+export QT_QPA_PLATFORM=kobo
+export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS="rotate=0"
+export QT_QPA_GENERIC_PLUGINS="evdevtouch:/dev/input/event1"
+cd "$KOBOFROTZ_DIR"
+exec ./KoboFrotz "$@"
+RUNEOF
+            chmod +x dist/kobofrotz/run.sh
+            
+            # Create NickelMenu config
+            cat > dist/nm/kobofrotz << "NMEOF"
+menu_item :main :KoboFrotz (Z-Machine) :cmd_spawn :quiet:/mnt/onboard/.adds/kobofrotz/run.sh
+  chain_success :nickel_misc :rescan_books_full
+NMEOF
+            
+            echo "[Docker] Distribution created successfully!"
+            ls -la dist/kobofrotz/
+        else
+            echo "[Docker] ERROR: Build failed - binary not created"
+            exit 1
+        fi
+    '
 
 echo ""
-echo "Build complete! Output is in dist/"
+
+# Verify build output
+if [ -f "$SCRIPT_DIR/dist/kobofrotz/KoboFrotz" ]; then
+    ARCH=$(file "$SCRIPT_DIR/dist/kobofrotz/KoboFrotz" | grep -oE "ARM|x86-64|x86_64" || echo "unknown")
+    
+    log_info "=========================================="
+    log_info "Build successful!"
+    log_info "=========================================="
+    echo ""
+    log_info "Binary: $SCRIPT_DIR/dist/kobofrotz/KoboFrotz"
+    log_info "Architecture: $ARCH"
+    echo ""
+    
+    if [ "$ARCH" = "ARM" ]; then
+        log_info "✓ ARM binary created - ready for Kobo!"
+    else
+        log_warn "Binary is $ARCH, expected ARM for Kobo"
+    fi
+    
+    echo ""
+    log_info "Version:"
+    grep "BUILD_NUMBER" "$SCRIPT_DIR/version.h"
+    echo ""
+    log_info "Contents of dist/kobofrotz/:"
+    ls -la "$SCRIPT_DIR/dist/kobofrotz/"
+    echo ""
+    log_info "To deploy to Kobo:"
+    log_info "  ./deploy-kobo.sh /media/\$USER/KOBOeReader"
+else
+    log_error "Build failed - binary not found in dist/kobofrotz/"
+    exit 1
+fi
 EOF
     
     chmod +x "$SCRIPT_DIR/build-docker.sh"

@@ -16,7 +16,7 @@
 
 // Build number (4-digit hex, auto-incremented during build)
 // Format: 0x0001 to 0xFFFF
-#define KOBOFROTZ_BUILD_NUMBER 0x000C
+#define KOBOFROTZ_BUILD_NUMBER 0x000E
 
 // Helper macros for string conversion
 #define KOBOFROTZ_STRINGIFY(x) #x
