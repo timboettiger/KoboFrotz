@@ -4,11 +4,15 @@
 # This file is sourced by build-kobo.sh
 
 # Path to Kobo Cross-Compilation Toolchain
-# Default: ~/x-tools/arm-kobo-linux-gnueabihf
+# If using setup-toolchain.sh, this will be set automatically
+# Default (local): ./toolchain/arm-kobo-linux-gnueabihf
+# Default (home):  ~/x-tools/arm-kobo-linux-gnueabihf
 #KOBO_TOOLCHAIN=$HOME/x-tools/arm-kobo-linux-gnueabihf
 
 # Path to Qt for Kobo (cross-compiled)
-# Default: ~/qt-kobo
+# If using setup-toolchain.sh, this will be set automatically
+# Default (local): ./toolchain/qt-kobo
+# Default (home):  ~/qt-kobo
 #QT_KOBO=$HOME/qt-kobo
 
 # Installation path on the Kobo for the app

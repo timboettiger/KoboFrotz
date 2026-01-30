@@ -10,14 +10,25 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR/build-kobo"
 OUTPUT_DIR="$SCRIPT_DIR/dist"
+LOCAL_TOOLCHAIN_DIR="$SCRIPT_DIR/toolchain"
 
 # Default paths (can be overridden via environment or kobo-build.conf)
 if [ -f "$SCRIPT_DIR/kobo-build.conf" ]; then
     source "$SCRIPT_DIR/kobo-build.conf"
 fi
 
-KOBO_TOOLCHAIN="${KOBO_TOOLCHAIN:-$HOME/x-tools/arm-kobo-linux-gnueabihf}"
-QT_KOBO="${QT_KOBO:-$HOME/qt-kobo}"
+# Check for local toolchain first, then fall back to home directory
+if [ -d "$LOCAL_TOOLCHAIN_DIR/arm-kobo-linux-gnueabihf" ]; then
+    KOBO_TOOLCHAIN="${KOBO_TOOLCHAIN:-$LOCAL_TOOLCHAIN_DIR/arm-kobo-linux-gnueabihf}"
+else
+    KOBO_TOOLCHAIN="${KOBO_TOOLCHAIN:-$HOME/x-tools/arm-kobo-linux-gnueabihf}"
+fi
+
+if [ -d "$LOCAL_TOOLCHAIN_DIR/qt-kobo" ]; then
+    QT_KOBO="${QT_KOBO:-$LOCAL_TOOLCHAIN_DIR/qt-kobo}"
+else
+    QT_KOBO="${QT_KOBO:-$HOME/qt-kobo}"
+fi
 
 # Kobo-specific paths (configurable)
 KOBO_APP_DIR="${KOBO_APP_DIR:-/mnt/onboard/.adds/kobofrotz}"

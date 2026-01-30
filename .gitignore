@@ -3,6 +3,12 @@ build-kobo/
 build/
 dist/
 
+# Toolchain (downloaded by setup-toolchain.sh)
+toolchain/
+
+# Generated scripts
+build-docker.sh
+
 # Qt generated files
 Makefile
 *.o

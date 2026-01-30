@@ -11,15 +11,70 @@ This guide describes how to cross-compile KoboFrotz for Kobo Libra Colour (Firmw
 
 ### Development Environment
 - Linux-based operating system (Ubuntu 20.04+ recommended)
+- macOS (Intel or Apple Silicon) with Docker
 - Git
-- Basic build tools (build-essential, autoconf, automake, libtool)
+- Basic build tools
 
-## 1. Toolchain Installation
+## Quick Start
 
-### Option A: kobo-qt-setup-scripts (Recommended)
+### Option A: Automated Setup (Linux)
 
 ```bash
-# Clone repository
+# Clone the repository
+git clone https://github.com/timboettiger/KoboFrotz.git
+cd KoboFrotz
+
+# Setup toolchain (downloads ~600MB, builds Qt ~30-60min)
+./setup-toolchain.sh
+
+# Build KoboFrotz
+./build-kobo.sh
+
+# Deploy to Kobo
+./deploy-kobo.sh /media/$USER/KOBOeReader
+```
+
+### Option B: Docker Build (macOS / Linux)
+
+```bash
+# Clone the repository
+git clone https://github.com/timboettiger/KoboFrotz.git
+cd KoboFrotz
+
+# Create Docker helper script
+./setup-toolchain.sh --docker
+
+# Build using Docker
+./build-docker.sh
+
+# Deploy to Kobo
+./deploy-kobo.sh /Volumes/KOBOeReader
+```
+
+## Detailed Setup Instructions
+
+### 1. Toolchain Installation
+
+#### Automated (Recommended)
+
+The `setup-toolchain.sh` script downloads and installs all required tools into the `toolchain/` directory within the project:
+
+```bash
+# Full setup (toolchain + Qt)
+./setup-toolchain.sh
+
+# Or step by step:
+./setup-toolchain.sh --toolchain-only  # Install ARM toolchain
+./setup-toolchain.sh --qt-only         # Build Qt (after toolchain)
+
+# Verify installation
+./setup-toolchain.sh --verify
+```
+
+#### Manual Installation
+
+```bash
+# Clone kobo-qt-setup-scripts
 git clone https://github.com/Rain92/kobo-qt-setup-scripts.git
 cd kobo-qt-setup-scripts
 
@@ -31,15 +86,9 @@ cd kobo-qt-setup-scripts
 ./build_qt.sh
 ```
 
-### Option B: Docker-based Development
+### 2. Environment Variables
 
-```bash
-# Use Docker image
-docker pull rain92/kobo-qt-dev
-docker run -it -v $(pwd):/workspace rain92/kobo-qt-dev
-```
-
-## 2. Set Environment Variables
+If using manual installation, set these environment variables:
 
 ```bash
 # Path to toolchain
@@ -52,17 +101,13 @@ export CROSS_COMPILE=arm-kobo-linux-gnueabihf-
 # Qt for Kobo
 export QT_KOBO=~/qt-kobo
 export PATH=$QT_KOBO/bin:$PATH
-
-# Sysroot
-export SYSROOT=$KOBO_TOOLCHAIN/arm-kobo-linux-gnueabihf/sysroot
 ```
 
-## 3. Compile KoboFrotz
+Or create a `kobo-build.conf` file (see `kobo-build.conf.example`).
+
+### 3. Compile KoboFrotz
 
 ```bash
-# Navigate to KoboFrotz directory
-cd KoboFrotz
-
 # Use the build script (recommended)
 ./build-kobo.sh
 
