@@ -178,11 +178,12 @@ cd "$SCRIPT_DIR"
 # Prefer Kobo platform plugin but fall back to linuxfb if it fails
 if [ -f "$SCRIPT_DIR/plugins/platforms/libkobo.so" ]; then
     export QT_QPA_PLATFORM=kobo
-    exec "$SCRIPT_DIR/KoboFrotz" "$@" || {
+    "$SCRIPT_DIR/KoboFrotz" "$@"
+    if [ $? -ne 0 ]; then
         echo "Kobo platform plugin failed, falling back to linuxfb..." >&2
         export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
         exec "$SCRIPT_DIR/KoboFrotz" "$@"
-    }
+    fi
 else
     export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
     exec "$SCRIPT_DIR/KoboFrotz" "$@"
