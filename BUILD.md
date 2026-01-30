@@ -158,12 +158,12 @@ chmod +x /mnt/onboard/.adds/qtfrotz/run.sh
 ### Bildschirmauflösung
 - 1264 x 1680 Pixel (Portrait)
 - 1680 x 1264 Pixel (Landscape)
-- Das Farbdisplay unterstützt 4096 Farben (E-Ink Kaleido)
+- Das Farbdisplay unterstützt 4096 Farben (E Ink Kaleido)
 
-### E-Ink Optimierungen
+### E Ink Optimierungen
 - Verwende hohen Kontrast (Schwarz/Weiß) für beste Lesbarkeit
 - Minimiere Bildschirmaktualisierungen für längere Akkulaufzeit
-- Die Anwendung nutzt bereits `/etc/eink.qss` für E-Ink-optimierte Styles
+- Die Anwendung nutzt bereits `/etc/eink.qss` für E Ink-optimierte Styles
 
 ### Touch-Input
 Der Libra Colour verwendet einen kapazitiven Touchscreen. Das qt5-kobo-platform-plugin 

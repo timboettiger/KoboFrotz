@@ -136,7 +136,7 @@ create_dist() {
 export LD_LIBRARY_PATH=/mnt/onboard/.adds/qt-linux-5.15-kobo/lib:$LD_LIBRARY_PATH
 export QT_QPA_PLATFORM=kobo
 
-# E-Ink Display-Einstellungen für Kobo Libra Colour
+# E Ink Display-Einstellungen für Kobo Libra Colour
 export QT_QPA_EVDEV_TOUCHSCREEN_PARAMETERS="rotate=0"
 export QT_QPA_GENERIC_PLUGINS="evdevtouch:/dev/input/event1"
 
