@@ -32,3 +32,4 @@ KoboFrotz
 
 # Local configuration (user-specific)
 kobo-build.conf
+_codeql_detected_source_root
