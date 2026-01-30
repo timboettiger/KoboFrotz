@@ -200,7 +200,7 @@ echo "[Docker] Creating NickelMenu configuration..."
 mkdir -p /work/dist/nm
 cat > /work/dist/nm/kobofrotz << "NMCONFIG"
 menu_item :main :KoboFrotz :cmd_spawn :quiet:/mnt/onboard/.adds/KoboFrotz/KoboFrotz.sh
-  chain_success :dbg_msg :KoboFrotz started OK (see log)
+  chain_success :dbg_msg :KoboFrotz exited OK (see log)
   chain_failure :dbg_msg :KoboFrotz failed (see log)
   chain_always  :nickel_misc :rescan_books_full
 NMCONFIG
