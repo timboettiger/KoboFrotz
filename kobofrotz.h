@@ -1,12 +1,12 @@
 /*
- * k_frotz.h
+ * kobofrotz.h
  *
- * KDE interface, declarations, definitions, and defaults
+ * KoboFrotz interface, declarations, definitions, and defaults
  *
  */
 
-#ifndef K_FROTZ_H
-#define K_FROTZ_H
+#ifndef KOBOFROTZ_H
+#define KOBOFROTZ_H
 
 #define MASTER_CONFIG		"frotz.conf"
 #define USER_CONFIG		".frotzrc"
@@ -93,4 +93,4 @@ struct frotz_config
 extern KoboFrotzView* global_kobofrotzwindow;
 
 
-#endif
+#endif // KOBOFROTZ_H

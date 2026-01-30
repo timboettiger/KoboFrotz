@@ -425,7 +425,7 @@ unsigned char KoboFrotzView::readLine(int max, zchar *buf, int timeout,
     // Repaint input line.
 
     writeInputLine(xPos0, (char*)buf, len, scrpos);
-    xPos = xPos0; // We'll update the cursos position later.
+    xPos = xPos0; // We'll update the cursor position later.
 
     // Process key.
 
@@ -466,7 +466,7 @@ unsigned char KoboFrotzView::readLine(int max, zchar *buf, int timeout,
 
     switch (ch)
     {
-      case ZC_BACKSPACE: /* Delete preceeding character */
+      case ZC_BACKSPACE: /* Delete preceding character */
         if (scrpos != 0)
           {
             QString qbuf = QString::fromLatin1((char*)buf);
@@ -784,33 +784,40 @@ QString KoboFrotzView::getFileName(QString defaultFileName, int flag)
       case FILE_SAVE:
         filter  = QObject::tr("*.sav");
         caption = QObject::tr("Save game...");
+        extension = "sav";
         save = true;
         break;
       case FILE_RESTORE:
         filter  = QObject::tr("*.sav");
         caption = QObject::tr("Restore game...");
+        extension = "sav";
         break;
       case FILE_SCRIPT:
         filter  = QObject::tr("*.src");
         caption = QObject::tr("Save script...");
+        extension = "src";
         save = true;
         break;
       case FILE_RECORD:
         filter  = QObject::tr("*.rec");
         caption = QObject::tr("Record commands...");
+        extension = "rec";
         break;
       case FILE_PLAYBACK:
         filter  = QObject::tr("*.rec");
         caption = QObject::tr("Play back commands...");
+        extension = "rec";
         break;
       case FILE_SAVE_AUX:
         filter  = QObject::tr("*.aux");
         caption = QObject::tr("Save auxiliary file...");
+        extension = "aux";
         save = true;
         break;
       case FILE_LOAD_AUX:
         filter  = QObject::tr("*.aux");
         caption = QObject::tr("Restore auxiliary file...");
+        extension = "aux";
         break;
     }
 
@@ -887,9 +894,15 @@ void KoboFrotzView::paintEvent(QPaintEvent* e)
     versionFont.setPointSize(10);
     p.setFont(versionFont);
     
-    QString versionText = QString(KOBOFROTZ_APP_TITLE);
+    // Format version string with 4-digit hex build number (e.g., "KoboFrotz V1.0.0-0001")
+    QString versionText = QString("%1 %2-%3")
+        .arg(KOBOFROTZ_APP_NAME)
+        .arg(KOBOFROTZ_VERSION_STRING)
+        .arg(KOBOFROTZ_BUILD_NUMBER, 4, 16, QChar('0')).toUpper();
+    
     QFontMetrics vfm(versionFont);
-    int textWidth = vfm.horizontalAdvance(versionText);
+    // Use width() for Qt 5.10 compatibility, horizontalAdvance() requires Qt 5.11+
+    int textWidth = vfm.width(versionText);
     
     // Draw version in bottom-right corner
     p.drawText(width() - textWidth - 10, height() - 10, versionText);
